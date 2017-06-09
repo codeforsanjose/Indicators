@@ -1,1 +1,1 @@
-Parsing data from <a href="www.siliconvalleyindicators.org">siliconvalleyindicators.org</a>
+Parsing data from <a href="siliconvalleyindicators.org">siliconvalleyindicators.org</a>
