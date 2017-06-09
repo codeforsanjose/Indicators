@@ -1,5 +1,6 @@
 import requests
 from requests.auth import HTTPBasicAuth
+import pandas
 
 apikey = "d8fa9f7c0841efecfb91b98bf8cbe056cf654cec"
 request_url = "http://citysdk.commerce.gov"
@@ -16,9 +17,11 @@ def main():
         'variables': ['income', 'population']
     }
     response = requests.post(request_url, auth=HTTPBasicAuth(apikey, None), json=request_obj)
-
-    print(response.json())
-
+    data_gotten = response.json()
+    """
+    pandas takes series data meaning a big array of stuffs not dicts so need
+    to get array of data then stick into pandas for parsing i guesst 
+    """
 
 if __name__ == "__main__":
     main()
