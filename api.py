@@ -18,6 +18,11 @@ def main():
     }
     response = requests.post(request_url, auth=HTTPBasicAuth(apikey, None), json=request_obj)
     data_gotten = response.json()
+    types = data_gotten['type']
+    features = data_gotten['features']
+    totals = data_gotten['totals']
+    panda_data = pandas.DataFrame(features)
+
     """
     pandas takes series data meaning a big array of stuffs not dicts so need
     to get array of data then stick into pandas for parsing i guesst 
