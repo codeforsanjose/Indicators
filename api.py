@@ -130,7 +130,17 @@ trace_sf = go.Scatter(
         dash='dash')
 )
 
-data = [trace_silicon, trace_sf]
+trace_cali = go.Scatter(
+    x = years,
+    y = income_cali,
+    name = 'California',
+    line = dict(
+        color = ('rgb(205, 12, 24)'),
+        width = 4,
+        dash='dot')
+)
+
+data = [trace_silicon, trace_sf, trace_cali]
 
 layout = dict(title = 'Share of Households with Income >150k',
               xaxis = dict(title = 'year', tickmode= years, nticks=5),
