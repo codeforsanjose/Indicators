@@ -94,12 +94,22 @@ def us_income(year):
             sum(int(item['B19001_017E']) for item in us_tot2)
     us_tot_pop = sum(int(item['B19051_002E']) for item in us_pop)
     us_ratio = (us_tot / us_tot_pop *100)
-    us_ratio = round(us_ratio, 1)
 
     return us_ratio
 
 years = [2011, 2012, 2013, 2014, 2015]
+
+#income for silicon valley from 2011 to 2015
 income_silicon = [sm_sc_income(year) for year in years]
+
+#income for San fransisco county from 2011 to 2015
+income_sf = [sf_income(year)  for year in years]
+
+#income for California from 2011 to 2015
+income_cali = [cali_income(year)  for year in years]
+
+#income for United States from 2011 to 2015
+income_us = [us_income(year)  for year in years]
 
 trace_silicon = go.Scatter(
     x = years,
@@ -110,9 +120,19 @@ trace_silicon = go.Scatter(
         width = 4)
 )
 
-data = [trace_silicon]
+trace_sf = go.Scatter(
+    x = years,
+    y = income_sf,
+    name = 'San Fransisco',
+    line = dict(
+        color = ('rgb(22, 96, 167)'),
+        width = 4,
+        dash='dash')
+)
 
-layout = dict(title = 'Share of household with income >150k',
+data = [trace_silicon, trace_sf]
+
+layout = dict(title = 'Share of Households with Income >150k',
               xaxis = dict(title = 'year', tickmode= years, nticks=5),
               yaxis = dict(title = 'share of households'),
               )
