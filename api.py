@@ -153,7 +153,10 @@ data = [trace_silicon, trace_sf, trace_cali, trace_us]
 
 layout = dict(title = 'Share of Households with Income >150k',
               xaxis = dict(title = 'year', tickmode= years, nticks=5),
-              yaxis = dict(title = 'share of households'),
+              yaxis = dict(title = 'share of households', ticksuffix= '%'),
+              width=1000,
+              height=450,
+
               )
 
 fig = dict(data=data, layout=layout)
