@@ -76,6 +76,24 @@ def cali_income(year):
 
     return cali_ratio
 
+def us_income(year):
+    c = Census("d8fa9f7c0841efecfb91b98bf8cbe056cf654cec")
+
+    # household with income >150K and <200k in US
+    us_tot1 = c.acs5.state('B19001_016E', Census.ALL, year=year)
+    # household with income >200k in US
+    us_tot2 = c.acs5.state('B19001_017E', Census.ALL, year=year)
+    #households with income US
+    us_pop = c.acs5.state('B19051_002E', Census.ALL, year=year)
+    #share of households with income >150K in US
+    us_tot= sum(int(item['B19001_016E']) for item in us_tot1) + \
+            sum(int(item['B19001_017E']) for item in us_tot2)
+    us_tot_pop = sum(int(item['B19051_002E']) for item in us_pop)
+    us_ratio = (us_tot / us_tot_pop *100)
+    us_ratio = round(us_ratio, 1)
+
+    return us_ratio
+
 def main():
     request_obj = {
         'zip': '21401',
