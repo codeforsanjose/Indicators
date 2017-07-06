@@ -39,6 +39,25 @@ def sm_sc_income(year):
 
     return s_ratio
 
+def sf_income(year):
+    c = Census("d8fa9f7c0841efecfb91b98bf8cbe056cf654cec")
+
+    # household with income >150K and <200k in san fransisco county
+    san_fransisco1 = c.acs5.state_county('B19001_016E', states.CA.fips, '075', year=year)
+    # household with income >200k in san fransisco county
+    san_fransisco2 = c.acs5.state_county('B19001_017E', states.CA.fips, '075', year=year)
+    # households with income San Fransisco
+    # sf_pop = c.acs5.state_county('B01003_001E', states.CA.fips, '075', year=year)
+    sf_pop = c.acs5.state_county('B19051_002E', states.CA.fips, '075', year=year)
+    # share of households with income >150K in San Fransisco
+    sf_tot = sum(int(item['B19001_016E']) for item in san_fransisco1) + \
+             sum(int(item['B19001_017E']) for item in san_fransisco2)
+    sf_tot_pop = sum(int(item['B19051_002E']) for item in sf_pop)
+    sf_ratio = (sf_tot / sf_tot_pop * 100)
+    sf_ratio = round(sf_ratio, 1)
+
+    return sf_ratio
+
 def main():
     request_obj = {
         'zip': '21401',
