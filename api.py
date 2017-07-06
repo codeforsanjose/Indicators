@@ -3,6 +3,10 @@ from requests.auth import HTTPBasicAuth
 import pandas
 from census import Census
 from us import states
+import plotly
+import plotly.plotly as py
+import plotly.graph_objs as go
+import numpy as np
 
 #api key to access data using us census api (acs5)
 apikey = "d8fa9f7c0841efecfb91b98bf8cbe056cf654cec"
@@ -93,6 +97,28 @@ def us_income(year):
     us_ratio = round(us_ratio, 1)
 
     return us_ratio
+
+years = [2011, 2012, 2013, 2014, 2015]
+income_silicon = [sm_sc_income(year) for year in years]
+
+trace_silicon = go.Scatter(
+    x = years,
+    y = income_silicon,
+    name = 'Silicon valley',
+    line = dict(
+        color = ('rgb(205, 12, 24)'),
+        width = 4)
+)
+
+data = [trace_silicon]
+
+layout = dict(title = 'Share of household with income >150k',
+              xaxis = dict(title = 'year', tickmode= years, nticks=5),
+              yaxis = dict(title = 'share of households'),
+              )
+
+fig = dict(data=data, layout=layout)
+py.plot(fig, filename='styled-line')
 
 def main():
     request_obj = {
