@@ -8,6 +8,8 @@ import plotly.plotly as py
 import plotly.graph_objs as go
 import numpy as np
 
+plotly.tools.set_credentials_file(username='manika15', api_key='dogNq5ILvZnKd5BzKOry')
+
 #api key to access data using us census api (acs5)
 apikey = "d8fa9f7c0841efecfb91b98bf8cbe056cf654cec"
 
