@@ -1,6 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 import pandas
+import matplotlib.pyplot as plt
 
 apikey = "d8fa9f7c0841efecfb91b98bf8cbe056cf654cec"
 request_url = "http://citysdk.commerce.gov"
@@ -22,6 +23,9 @@ def main():
     features = data_gotten['features']
     totals = data_gotten['totals']
     panda_data = pandas.DataFrame(features)
+    fig, ax = plt.subplots()
+    ax.plot(features)
+    plt.show()
 
     """
     pandas takes series data meaning a big array of stuffs not dicts so need
