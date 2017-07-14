@@ -8,20 +8,23 @@ class IncomeBuilder():
         self.census = Census("d8fa9f7c0841efecfb91b98bf8cbe056cf654cec")
         self.income_range_ids = ['B19001_016E', 'B19001_017E']
 
-    def get_total_from_county(self, county_id, year):
-        data = [self.census.acs5.state_county(income, states.CA.fips, county_id, year=year) for income in self.income_range_ids]
+    def make_api_call_with_income_range_id(self, income_range_id, county_id, year):
+        data = self.census.acs5.state_county(income_range_id, states.CA.fips, county_id, year=year)
+        return data[0]
 
+    def get_total_from_county(self, county_id, year):
+        #data = [self.census.acs5.state_county(income, states.CA.fips, county_id, year=year) for income in self.income_range_ids]
+        data = [self.make_api_call_with_income_range_id(income_range, county_id, year) for income_range in self.income_range_ids]
         total = 0.0
         for data in data:
-            key = list(data[0].keys())[0]
-            value_needed = int(data[0][key])
+            key = list(data.keys())[0]
+            value_needed = int(data[key])
             total += value_needed
 
         return total
 
     def get_population(self, some_id, county_id, year):
-        c = Census("d8fa9f7c0841efecfb91b98bf8cbe056cf654cec")
-        population = c.acs5.state_county(some_id, states.CA.fips, county_id, year=year)
+        population = self.census.acs5.state_county(some_id, states.CA.fips, county_id, year=year)
         return int(population[0][some_id])
 
     def sm_sc_income(self, year):
