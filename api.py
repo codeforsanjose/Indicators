@@ -8,6 +8,7 @@ import plotly.plotly as py
 import plotly.graph_objs as go
 import numpy as np
 from income_builder import IncomeBuilder
+from population_handler import PopulationHandler
 
 plotly.tools.set_credentials_file(username='manika15', api_key='dogNq5ILvZnKd5BzKOry')
 
