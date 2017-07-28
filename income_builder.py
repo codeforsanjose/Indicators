@@ -23,21 +23,15 @@ class IncomeBuilder():
 
         return total
 
-    def get_population(self, some_id, county_id, year):
-        population = self.census.acs5.state_county(some_id, states.CA.fips, county_id, year=year)
-        return int(population[0][some_id])
 
-    def sm_sc_income(self, year):
+class CensusAPI():
+    def __init__(self):
+        if self.census is None:
+            self.census = Census("d8fa9f7c0841efecfb91b98bf8cbe056cf654cec")
 
-        san_mateo_total = self.get_total_from_county('081', year)
-        santa_clara_total = self.get_total_from_county('085', year)
+    def call_API(self, indicator_id, county_id, year):
+        return self.census.acs5.state_county(indicator_id, states.CA.fips, county_id, year=year)         
 
-        san_mateo_population = self.get_population('B19051_002E', '081', year)
-        santa_clara_population = self.get_population('B19051_002E', '085', year)
-        income_total = san_mateo_total + santa_clara_total
-        population_total = san_mateo_population + santa_clara_population
 
-        ratio = (income_total / population_total * 100)
-        rounded_ratio = round(ratio, 1)
 
-        return rounded_ratio
+

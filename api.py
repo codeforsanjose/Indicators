@@ -19,8 +19,6 @@ apikey = "d8fa9f7c0841efecfb91b98bf8cbe056cf654cec"
 request_url = "http://citysdk.commerce.gov"
 
 
-x = IncomeBuilder()
-x.sm_sc_income('2015')
 
 #function to fetch share of households with income >150k in Silicon Valley (San Mateo & santa Clara county
 def sm_sc_income(year):
@@ -200,116 +198,31 @@ def income_150k_plot():
 
 years = [2011, 2012, 2013, 2014, 2015]
 
-#income for silicon valley from 2011 to 2015
-income_silicon = [sm_sc_income(year) for year in years]
-
-#income for San fransisco county from 2011 to 2015
-income_sf = [sf_income(year)  for year in years]
-
-#income for California from 2011 to 2015
-income_cali = [cali_income(year)  for year in years]
-
-#income for United States from 2011 to 2015
-income_us = [us_income(year)  for year in years]
-
-trace_silicon = go.Scatter(
-    x = years,
-    y = income_silicon,
-    name = 'Silicon valley',
-    line = dict(
-        color = ('rgb(205, 12, 24)'),
-        width = 4)
-)
-
-trace_sf = go.Scatter(
-    x = years,
-    y = income_sf,
-    name = 'San Fransisco',
-    line = dict(
-        color = ('rgb(22, 96, 167)'),
-        width = 4,
-        dash='dash')
-)
-
-trace_cali = go.Scatter(
-    x = years,
-    y = income_cali,
-    name = 'California',
-    line = dict(
-        color = ('rgb(205, 12, 24)'),
-        width = 4,
-        dash='dot')
-)
-
-trace_us = go.Scatter(
-    x = years,
-    y = income_us,
-    name = 'United States',
-    line = dict(
-        color = ('rgb(22, 96, 167)'),
-        width = 4)
-)
-
-data = [trace_silicon, trace_sf, trace_cali, trace_us]
-
-layout = dict(title = 'Share of Households with Income >150k',
-              xaxis = dict(title = 'year', tickmode= years, nticks=5),
-              yaxis = dict(title = 'share of households', ticksuffix= '%'),
-              width=1000,
-              height=450,
-
-              )
-
-fig = dict(data=data, layout=layout)
-py.plot(fig, filename='styled-line')
 
 def main():
-    request_obj = {
-        'zip': '21401',
-        'state': 'MD',
-        'level': 'state',
-        'sublevel': False,
-        'api': 'acs5',
-        'year': 2010,
-        'variables': ['income', 'population']
-    }
-    response = requests.post(request_url, auth=HTTPBasicAuth(apikey, None), json=request_obj)
-    data_gotten = response.json()
-    types = data_gotten['type']
-    features = data_gotten['features']
-    totals = data_gotten['totals']
-    panda_data = pandas.DataFrame(features)
-    fig, ax = plt.subplots()
-    ax.plot(features)
-    plt.show()
+    county_ids = dict(
+        san_mateo='081',
+        santa_clara='085'
+    )
+    income_handler = IncomeBuilder()
+    population_handler = PopulationHandler()
+    san_mateo_income_total = income_handler.get_total_from_county(county_ids['san_mateo'], '2015')
+    santa_clara_total = income_handler.get_total_from_county(county_ids['santa_clara'], '2015')
+    san_mateo_population = population_handler.get_population('B19051_002E', county_ids['san_mateo'], '2015')
+    santa_clara_population = population_handler.get_population('B19051_002E', county_ids['santa_clara'], '2015')
+    
+    income_total = san_mateo_income_total + santa_clara_total
+    population_total = san_mateo_population + santa_clara_population
+
+    ratio = (income_total / population_total * 100)
+    rounded_ratio = round(ratio, 1)
+    print(rounded_ratio)
 
     """
     pandas takes series data meaning a big array of stuffs not dicts so need
     to get array of data then stick into pandas for parsing i guesst 
     """
-    income_150k_plot()
 
-    # request_obj = {
-    #     'zip': '21401',
-    #     'state': 'MD',
-    #     'level': 'state',
-    #     'sublevel': False,
-    #     'api': 'acs5',
-    #     'year': 2010,
-    #     'variables': ['income', 'population']
-    # }
-    # response = requests.post(request_url, auth=HTTPBasicAuth(apikey, None), json=request_obj)
-    # data_gotten = response.json()
-    # print (data_gotten)
-    # types = data_gotten['type']
-    # features = data_gotten['features']
-    # totals = data_gotten['totals']
-    # panda_data = pandas.DataFrame(features)
-    #
-    # """
-    # pandas takes series data meaning a big array of stuffs not dicts so need
-    # to get array of data then stick into pandas for parsing i guesst
-    # """
 
 if __name__ == "__main__":
     main()
