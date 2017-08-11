@@ -3,70 +3,16 @@ from requests.auth import HTTPBasicAuth
 import pandas
 from census import Census
 from us import states
-import plotly
-import plotly.plotly as py
-import plotly.graph_objs as go
-import numpy as np
 from income_builder import IncomeBuilder
 from population_handler import PopulationHandler
-
-plotly.tools.set_credentials_file(username='manika15', api_key='dogNq5ILvZnKd5BzKOry')
+from trace_generator import TraceGenerator
+from layout_generator import LayoutGenerator
 
 #api key to access data using us census api (acs5)
 apikey = "d8fa9f7c0841efecfb91b98bf8cbe056cf654cec"
 
 #url to access
 request_url = "http://citysdk.commerce.gov"
-
-
-
-#function to fetch share of households with income >150k in Silicon Valley (San Mateo & santa Clara county
-def sm_sc_income(year):
-    c = Census("d8fa9f7c0841efecfb91b98bf8cbe056cf654cec")
-
-    # household with income >150K and <200k in san mateo county
-    san_mateo1 = c.acs5.state_county('B19001_016E', states.CA.fips, '081', year=year)
-    # household with income >200k in san mateo county
-    san_mateo2 = c.acs5.state_county('B19001_017E', states.CA.fips, '081', year=year)
-    # households with income San Mateo
-    san_mateo_pop = c.acs5.state_county('B19051_002E', states.CA.fips, '081', year=year)
-
-    # household with income >150K and <200k in santa clara county
-    santa_clara1 = c.acs5.state_county('B19001_016E', states.CA.fips, '085', year=year)
-    # household with income >200k in santa clara county
-    santa_clara2 = c.acs5.state_county('B19001_017E', states.CA.fips, '085', year=year)
-    # households with income Santa clara
-    santa_clara_pop = c.acs5.state_county('B19051_002E', states.CA.fips, '085', year=year)
-    # share of households with income >150K in San Mateo & Santa clara
-    sm_tot = sum(int(item['B19001_016E']) for item in san_mateo1) + \
-             sum(int(item['B19001_017E']) for item in san_mateo2)
-    sc_tot = sum(int(item['B19001_016E']) for item in santa_clara1) + \
-             sum(int(item['B19001_017E']) for item in santa_clara2)
-    s_tot_pop = sum(int(item['B19051_002E']) for item in san_mateo_pop) + \
-                sum(int(item['B19051_002E']) for item in santa_clara_pop)
-    s_ratio = ((sm_tot + sc_tot) / s_tot_pop * 100)
-    s_ratio = round(s_ratio, 1)
-
-    return s_ratio
-
-def sf_income(year):
-    c = Census("d8fa9f7c0841efecfb91b98bf8cbe056cf654cec")
-
-    # household with income >150K and <200k in san fransisco county
-    san_fransisco1 = c.acs5.state_county('B19001_016E', states.CA.fips, '075', year=year)
-    # household with income >200k in san fransisco county
-    san_fransisco2 = c.acs5.state_county('B19001_017E', states.CA.fips, '075', year=year)
-    # households with income San Fransisco
-    # sf_pop = c.acs5.state_county('B01003_001E', states.CA.fips, '075', year=year)
-    sf_pop = c.acs5.state_county('B19051_002E', states.CA.fips, '075', year=year)
-    # share of households with income >150K in San Fransisco
-    sf_tot = sum(int(item['B19001_016E']) for item in san_fransisco1) + \
-             sum(int(item['B19001_017E']) for item in san_fransisco2)
-    sf_tot_pop = sum(int(item['B19051_002E']) for item in sf_pop)
-    sf_ratio = (sf_tot / sf_tot_pop * 100)
-    sf_ratio = round(sf_ratio, 1)
-
-    return sf_ratio
 
 def cali_income(year):
     c = Census("d8fa9f7c0841efecfb91b98bf8cbe056cf654cec")
@@ -102,128 +48,70 @@ def us_income(year):
 
     return us_tot_pop
 
-#function to calculate share of households with income >150k
-def share(income, population):
-    ratio = [round(a/b*100,1) for a,b in zip(income, population)]
-    return ratio
-
 def income_150k_plot():
-    # households with income >150k in San Mateo county California
-    sm = [county_income(year, '081') for year in years]
-    # households with income >150k in Santa Clara county California
-    sc = [county_income(year, '085') for year in years]
-    # households with income >150k in Silicon Valley (San Mateo + Santa Clara) California
-    income_silicon = [a + b for a, b in zip(sm, sc)]
-    # households with income >150k in San Fransisco county California
-    income_sf = [county_income(year, '075') for year in years]
-    # households with income >150k in California state
     income_cali = [cali_income(year) for year in years]
     # households with income >150k in United States
     income_us = [us_income(year) for year in years]
 
-    # households with income in San Mateo county California
-    smp = [county_households(year, '081') for year in years]
-    # households with income in Santa Clara county California
-    scp = [county_households(year, '085') for year in years]
-    # households with income in Silicon Valley (San Mateo + Santa Clara) California
-    population_silicon = [a + b for a, b in zip(smp, scp)]
-    # households with income in San Fransisco county California
-    population_sf = [county_households(year, '075') for year in years]
-    # households with income in California state
     population_cali = [cali_population(year) for year in years]
     # households with income in United States
     population_us = [us_population(year) for year in years]
 
-    # share of households with income greater than 150k in Silicon valley
-    ratio_silicon = share(income_silicon, population_silicon)
-    # share of households with income greater than 150k in San Fransisco
-    ratio_sf = share(income_sf, population_sf)
     # share of households with income greater than 150k in California state
     ratio_cali = share(income_cali, population_cali)
     # share of households with income greater than 150k in United states
     ratio_us = share(income_us, population_us)
 
-    # ploting the Income graphs for Silicon valley, San Fransisco, California and United states
-    trace_silicon = go.Scatter(
-        x=years,
-        y=ratio_silicon,
-        name='Silicon valley',
-        line=dict(
-            color=('rgb(205, 12, 24)'),
-            width=4)
-    )
-
-    trace_sf = go.Scatter(
-        x=years,
-        y=ratio_sf,
-        name='San Fransisco',
-        line=dict(
-            color=('rgb(22, 96, 167)'),
-            width=4,
-            dash='dash')
-    )
-
-    trace_cali = go.Scatter(
-        x=years,
-        y=ratio_cali,
-        name='California',
-        line=dict(
-            color=('rgb(205, 12, 24)'),
-            width=4,
-            dash='dot')
-    )
-
-    trace_us = go.Scatter(
-        x=years,
-        y=ratio_us,
-        name='United States',
-        line=dict(
-            color=('rgb(22, 96, 167)'),
-            width=4)
-    )
-
-    data = [trace_silicon, trace_sf, trace_cali, trace_us]
-
-    layout = dict(title='Share of Households with Income >150k',
-                  xaxis=dict(title='year', tickmode=years, nticks=5),
-                  yaxis=dict(title='share of households', ticksuffix='%'),
-                  width=1000,
-                  height=450,
-                  )
-    fig = dict(data=data, layout=layout)
-    py.plot(fig, filename='styled-line')
-    us_ratio = (us_tot / us_tot_pop *100)
-
-    return us_ratio
-
-years = [2011, 2012, 2013, 2014, 2015]
-
-
 def main():
     county_ids = dict(
         san_mateo='081',
-        santa_clara='085'
+        santa_clara='085',
+        san_fransisco='075'
     )
+    years = [2011, 2012, 2013, 2014, 2015]
+
     income_handler = IncomeBuilder()
     population_handler = PopulationHandler()
-    san_mateo_income_total = income_handler.get_total_from_county(county_ids['san_mateo'], '2015')
-    santa_clara_total = income_handler.get_total_from_county(county_ids['santa_clara'], '2015')
-    san_mateo_population = population_handler.get_population('B19051_002E', county_ids['san_mateo'], '2015')
-    santa_clara_population = population_handler.get_population('B19051_002E', county_ids['santa_clara'], '2015')
-    
-    income_total = san_mateo_income_total + santa_clara_total
-    population_total = san_mateo_population + santa_clara_population
 
-    ratio = (income_total / population_total * 100)
-    rounded_ratio = round(ratio, 1)
-    print(rounded_ratio)
+    ratio_sv = []
+    ratio_sf = []
+    ratio_ca = []
+    ration_us = []
 
-    """
-    pandas takes series data meaning a big array of stuffs not dicts so need
-    to get array of data then stick into pandas for parsing i guesst 
-    """
+    for year in years:
+        san_mateo_income_total = income_handler.get_total_from_county(county_ids['san_mateo'], year)
+        santa_clara_total = income_handler.get_total_from_county(county_ids['santa_clara'], year)
+        san_mateo_population = population_handler.get_population('B19051_002E', county_ids['san_mateo'], year)
+        santa_clara_population = population_handler.get_population('B19051_002E', county_ids['santa_clara'], year)
 
+        income_total_silicon_valley = san_mateo_income_total + santa_clara_total
+        population_total_silicon_valley = san_mateo_population + santa_clara_population
+
+        ratio = (income_total_silicon_valley / population_total_silicon_valley * 100)
+        rounded_ratio_sv = round(ratio, 1)
+        ratio_sv.append(rounded_ratio_sv)
+
+        income_total_sf = income_handler.get_total_from_county(county_ids['san_fransisco'], year)
+        population_total_sf = population_handler.get_population('B19051_002E', county_ids['san_fransisco'], year)
+
+        ratio = (income_total_sf / population_total_sf * 100)
+        rounded_ratio_sf = round(ratio, 1)
+        ratio_sf.append(rounded_ratio_sf)
+
+    # print(ratio_sv)
+    # print(ratio_sf)
+    traces = []
+    trace_handler = TraceGenerator()
+    trace_sv = trace_handler.get_trace(ratio_sv, years, 'Silicon Valley', 'rgb(205, 12, 24)')
+    trace_sf = trace_handler.get_trace(ratio_sf, years, 'San Fransisco', 'rgb(22, 96, 167)')
+    traces.append(trace_sv)
+    traces.append(trace_sf)
+
+    layout_handler = LayoutGenerator()
+    layout_handler.get_layout(traces, years)
 
 if __name__ == "__main__":
     main()
 
+
+# color codes: 'rgb(205, 12, 24)', 'rgb(22, 96, 167)'
