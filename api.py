@@ -48,11 +48,6 @@ def us_income(year):
 
     return us_tot_pop
 
-#function to calculate share of households with income >150k
-def share(income, population):
-    ratio = [round(a/b*100,1) for a,b in zip(income, population)]
-    return ratio
-
 def income_150k_plot():
     income_cali = [cali_income(year) for year in years]
     # households with income >150k in United States
@@ -66,36 +61,6 @@ def income_150k_plot():
     ratio_cali = share(income_cali, population_cali)
     # share of households with income greater than 150k in United states
     ratio_us = share(income_us, population_us)
-
-    trace_cali = go.Scatter(
-        x=years,
-        y=ratio_cali,
-        name='California',
-        line=dict(
-            color=('rgb(205, 12, 24)'),
-            width=4,
-            dash='dot')
-    )
-
-    trace_us = go.Scatter(
-        x=years,
-        y=ratio_us,
-        name='United States',
-        line=dict(
-            color=('rgb(22, 96, 167)'),
-            width=4)
-    )
-
-    data = [trace_silicon, trace_sf, trace_cali, trace_us]
-
-    layout = dict(title='Share of Households with Income >150k',
-                  xaxis=dict(title='year', tickmode=years, nticks=5),
-                  yaxis=dict(title='share of households', ticksuffix='%'),
-                  width=1000,
-                  height=450,
-                  )
-    fig = dict(data=data, layout=layout)
-    py.plot(fig, filename='styled-line')
 
 def main():
     county_ids = dict(
@@ -149,3 +114,4 @@ if __name__ == "__main__":
     main()
 
 
+# color codes: 'rgb(205, 12, 24)', 'rgb(22, 96, 167)'
