@@ -3,15 +3,10 @@ from requests.auth import HTTPBasicAuth
 import pandas
 from census import Census
 from us import states
-import plotly
-import plotly.plotly as py
-import plotly.graph_objs as go
-import numpy as np
 from income_builder import IncomeBuilder
 from population_handler import PopulationHandler
 from trace_generator import TraceGenerator
-
-plotly.tools.set_credentials_file(username='manika15', api_key='dogNq5ILvZnKd5BzKOry')
+from layout_generator import LayoutGenerator
 
 #api key to access data using us census api (acs5)
 apikey = "d8fa9f7c0841efecfb91b98bf8cbe056cf654cec"
@@ -71,26 +66,6 @@ def income_150k_plot():
     ratio_cali = share(income_cali, population_cali)
     # share of households with income greater than 150k in United states
     ratio_us = share(income_us, population_us)
-
-    # ploting the Income graphs for Silicon valley, San Fransisco, California and United states
-    trace_silicon = go.Scatter(
-        x=years,
-        y=ratio_silicon,
-        name='Silicon valley',
-        line=dict(
-            color=('rgb(205, 12, 24)'),
-            width=4)
-    )
-
-    trace_sf = go.Scatter(
-        x=years,
-        y=ratio_sf,
-        name='San Fransisco',
-        line=dict(
-            color=('rgb(22, 96, 167)'),
-            width=4,
-            dash='dash')
-    )
 
     trace_cali = go.Scatter(
         x=years,
@@ -160,28 +135,17 @@ def main():
 
     # print(ratio_sv)
     # print(ratio_sf)
-    trace = []
+    traces = []
     trace_handler = TraceGenerator()
     trace_sv = trace_handler.get_trace(ratio_sv, years, 'Silicon Valley', 'rgb(205, 12, 24)')
     trace_sf = trace_handler.get_trace(ratio_sf, years, 'San Fransisco', 'rgb(22, 96, 167)')
+    traces.append(trace_sv)
+    traces.append(trace_sf)
 
-    data = [trace_sv, trace_sf]
-
-    layout = dict(title='Share of Households with Income >150k',
-                  xaxis=dict(title='year', tickmode=years, nticks=5),
-                  yaxis=dict(title='share of households', ticksuffix='%'),
-                  width=1000,
-                  height=450,
-                  )
-    fig = dict(data=data, layout=layout)
-    py.plot(fig, filename='styled-line')
-
-    """
-    pandas takes series data meaning a big array of stuffs not dicts so need
-    to get array of data then stick into pandas for parsing i guesst 
-    """
-
+    layout_handler = LayoutGenerator()
+    layout_handler.get_layout(traces, years)
 
 if __name__ == "__main__":
     main()
+
 
