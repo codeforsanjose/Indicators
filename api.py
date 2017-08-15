@@ -34,8 +34,8 @@ def main():
     for year in years:
         san_mateo_income_total = income_handler.get_total_from_county(county_ids['san_mateo'], year)
         santa_clara_total = income_handler.get_total_from_county(county_ids['santa_clara'], year)
-        san_mateo_population = population_handler.get_population('B19051_002E', county_ids['san_mateo'], year)
-        santa_clara_population = population_handler.get_population('B19051_002E', county_ids['santa_clara'], year)
+        san_mateo_population = population_handler.get_population(county_ids['san_mateo'], year)
+        santa_clara_population = population_handler.get_population(county_ids['santa_clara'], year)
 
         income_total_silicon_valley = san_mateo_income_total + santa_clara_total
         population_total_silicon_valley = san_mateo_population + santa_clara_population
@@ -45,7 +45,7 @@ def main():
         ratio_sv.append(rounded_ratio_sv)
 
         income_total_sf = income_handler.get_total_from_county(county_ids['san_fransisco'], year)
-        population_total_sf = population_handler.get_population('B19051_002E', county_ids['san_fransisco'], year)
+        population_total_sf = population_handler.get_population(county_ids['san_fransisco'], year)
 
         ratio = (income_total_sf / population_total_sf * 100)
         rounded_ratio_sf = round(ratio, 1)
