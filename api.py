@@ -68,6 +68,7 @@ def main():
         santa_clara='085',
         san_fransisco='075'
     )
+
     years = [2011, 2012, 2013, 2014, 2015]
 
     income_handler = IncomeBuilder()
@@ -76,7 +77,7 @@ def main():
     ratio_sv = []
     ratio_sf = []
     ratio_ca = []
-    ration_us = []
+    ratio_us = []
 
     for year in years:
         san_mateo_income_total = income_handler.get_total_from_county(county_ids['san_mateo'], year)
@@ -98,14 +99,32 @@ def main():
         rounded_ratio_sf = round(ratio, 1)
         ratio_sf.append(rounded_ratio_sf)
 
-    # print(ratio_sv)
-    # print(ratio_sf)
+        income_california = income_handler.get_total_from_state(year)
+        population_california = population_handler.get_population_state('B19051_002E', year)
+
+        ratio = (income_california/population_california)
+        rounded_ratio_ca = round(ratio, 1)
+        ratio_ca.append(rounded_ratio_ca)
+
+        income_us = income_handler.get_total_from_us(year)
+        population_us = population_handler.get_population_us('B19051_002E', year)
+
+        ratio = (income_us / population_us)
+        rounded_ratio_us = round(ratio, 1)
+        ratio_us.append(rounded_ratio_us)
+
+
     traces = []
     trace_handler = TraceGenerator()
     trace_sv = trace_handler.get_trace(ratio_sv, years, 'Silicon Valley', 'rgb(205, 12, 24)')
     trace_sf = trace_handler.get_trace(ratio_sf, years, 'San Fransisco', 'rgb(22, 96, 167)')
+    trace_ca = trace_handler.get_trace(ratio_ca, years, 'California', 'rgb(200, 125, 24)')
+    trace_us = trace_handler.get_trace(ratio_us, years, 'United States', 'rgb(250, 125, 124)')
+
     traces.append(trace_sv)
     traces.append(trace_sf)
+    traces.append(trace_ca)
+    traces.append(trace_us)
 
     layout_handler = LayoutGenerator()
     layout_handler.get_layout(traces, years)
