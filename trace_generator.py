@@ -19,3 +19,11 @@ class TraceGenerator():
                 width=4)
         )
         return trace
+
+    # def get_trace(self, values, years, name, color):
+    #     trace = go.Bar(
+    #         x=years,
+    #         y=values,
+    #         name=name,
+    #     )
+    #     return trace
