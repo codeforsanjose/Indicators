@@ -102,16 +102,22 @@ def main():
         income_california = income_handler.get_total_from_state(year)
         population_california = population_handler.get_population_state('B19051_002E', year)
 
-        ratio = (income_california/population_california)
+        ratio = (income_california/population_california * 100)
         rounded_ratio_ca = round(ratio, 1)
         ratio_ca.append(rounded_ratio_ca)
 
         income_us = income_handler.get_total_from_us(year)
         population_us = population_handler.get_population_us('B19051_002E', year)
 
-        ratio = (income_us / population_us)
+        ratio = (income_us / population_us * 100)
         rounded_ratio_us = round(ratio, 1)
         ratio_us.append(rounded_ratio_us)
+
+    # print (ratio_ca)
+    # print (ratio_us)
+    #
+    # print (cali_income(2011))
+    # print(cali_income(2012))
 
 
     traces = []
@@ -126,11 +132,20 @@ def main():
     traces.append(trace_ca)
     traces.append(trace_us)
 
+    traces_bar=[]
+    trace_sv_b = trace_handler.get_trace_bar(ratio_sv, years, 'Silicon Valley', 'rgb(205, 12, 24)')
+    trace_sf_b = trace_handler.get_trace_bar(ratio_sf, years, 'San Fransisco', 'rgb(22, 96, 167)')
+    trace_ca_b = trace_handler.get_trace_bar(ratio_ca, years, 'California', 'rgb(200, 125, 24)')
+    trace_us_b = trace_handler.get_trace_bar(ratio_us, years, 'United States', 'rgb(250, 125, 124)')
+
+    traces_bar.append(trace_sv_b)
+    traces_bar.append(trace_sf_b)
+    traces_bar.append(trace_ca_b)
+    traces_bar.append(trace_us_b)
+
     layout_handler = LayoutGenerator()
     layout_handler.get_layout(traces, years)
+    layout_handler.get_layout(traces_bar, years)
 
 if __name__ == "__main__":
     main()
-
-
-# color codes: 'rgb(205, 12, 24)', 'rgb(22, 96, 167)'
